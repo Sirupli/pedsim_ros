@@ -221,7 +221,12 @@ bool SceneServices::addStaticObstacles(pedsim_srvs::SpawnObstacle::Request &requ
 
 bool SceneServices::moveAgentClustersInPedsim(pedsim_srvs::MovePeds::Request &request,
                                 pedsim_srvs::MovePeds::Response &response){
-  SCENE.moveClusters(request.episode);
+  if((int)request.pattern_waypoints.size()==0){
+    response.waypoints=SCENE.moveClusters(request.episode);
+  }else{
+    ROS_INFO("move clusters");
+    SCENE.moveClusters(request.pattern_waypoints);
+  }  
   // static obstacle infos are updated every episode too
   SCENE.removeAllObstacles();
   response.finished=true;
