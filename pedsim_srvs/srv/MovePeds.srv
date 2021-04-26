@@ -1,5 +1,7 @@
 # Added by Junhui Li
 # For moving agents dynamically in pedsim
 int16 episode
+geometry_msgs/Point[] pattern_waypoints
 ---
 bool finished
+geometry_msgs/Point[] waypoints
