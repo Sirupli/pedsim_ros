@@ -40,6 +40,10 @@
 
 #include <pedsim_simulator/utilities.h>
 #include <geometry_msgs/Point.h>
+#include <pedsim_simulator/element/agent.h>
+#include <pedsim_simulator/element/areawaypoint.h>
+#include <pedsim_simulator/element/waitingqueue.h>
+#include <pedsim_simulator/waypointplanner/individualwaypointplanner.h>
 // Forward Declarations
 class QGraphicsScene;
 class Agent;
@@ -155,7 +159,8 @@ class Scene : public QObject, protected Ped::Tscene {
   virtual bool removeAttraction(AttractionArea* attractionInIn);
   
   //->move agent cluster directly to another place
-  virtual void moveClusters(int i);
+  virtual std::vector<geometry_msgs::Point> moveClusters(int i);
+  virtual void moveClusters(std::vector<geometry_msgs::Point> waypoints);
   virtual void removeAllObstacles();
 
   virtual std::set<const Ped::Tagent*> getNeighbors(double x, double y,
@@ -177,6 +182,7 @@ class Scene : public QObject, protected Ped::Tscene {
 
   // → simulated time
   double sceneTime;
+  // IndividualWaypointPlanner* waypointPlanner;
 };
 
 #endif
