@@ -305,7 +305,7 @@ QList<const Agent*> Agent::getPotentialChatters(double chattingDist) const{
 }
 //Added by Junhui Li (8.2.2021)
 bool Agent::meetFriends(){
-    QList<const Agent*> potentialChatters=getPotentialChatters(1.8);// dist for start chatting later could be put into config
+    QList<const Agent*> potentialChatters=getPotentialChatters(0.0001);// dist for start chatting later could be put into config
     for (const Agent* chatter: potentialChatters) {
       if(chatter !=nullptr){
         if(chatter->meetFriend==true){
