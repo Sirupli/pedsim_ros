@@ -186,8 +186,17 @@ void Agent::move(double h) {
 
   if (getType() == Ped::Tagent::ELDER) {
     // Old people slow!
-    Ped::Tagent::setVmax(0.9);
-    Ped::Tagent::setForceFactorDesired(0.5);
+    Ped::Tagent::setVmax(0.1);  //0.9
+    Ped::Tagent::setForceFactorDesired(0.2); //0.5
+  }
+
+  if (getType() == Ped::Tagent::ZEROER) {
+    // Old people slow!
+    Ped::Tagent::setVmax(0.0);  //0.9
+    Ped::Tagent::setForceFactorSocial(0.2); //CONFIG.forceSocial * 0.7
+    // ROS_INFO("rechereer++++++++++++=for ZEROer");
+    // Ped::Tagent::setForceFactorObstacle(35);
+    // Ped::Tagent::setForceFactorDesired(4.2);
   }
 
   if (stateMachine->getCurrentState() == AgentStateMachine::AgentState::StateRunning) {

@@ -42,7 +42,7 @@ class Twaypoint;
 /// \date    2003-12-26
 class LIBEXPORT Tagent {
  public:
-  enum AgentType { ADULT = 0, CHILD = 1, ROBOT = 2, ELDER = 3,
+  enum AgentType { ADULT = 0, CHILD = 1, ROBOT = 2, ELDER = 3, ZEROER=4,
                   ADULT_AVOID_ROBOT = 10, ADULT_AVOID_ROBOT_REACTION_TIME = 11};
 
   Tagent();

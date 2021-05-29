@@ -34,6 +34,7 @@ add_message_files( DIRECTORY msg
   Waypoint.msg
   Waypoints.msg
   Ped.msg
+  ZeroAgent.msg
 )
 
 # generate the messages

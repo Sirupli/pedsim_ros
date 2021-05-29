@@ -159,8 +159,8 @@ class Scene : public QObject, protected Ped::Tscene {
   virtual bool removeAttraction(AttractionArea* attractionInIn);
   
   //->move agent cluster directly to another place
-  virtual std::vector<geometry_msgs::Point> moveClusters(int i);
-  virtual void moveClusters(std::vector<geometry_msgs::Point> waypoints);
+  virtual std::vector<geometry_msgs::Point> moveClusters();
+  virtual std::vector<geometry_msgs::Point> moveClusters(std::vector<geometry_msgs::Point> waypoints, int i);
   virtual void removeAllObstacles();
 
   virtual std::set<const Ped::Tagent*> getNeighbors(double x, double y,
@@ -183,6 +183,8 @@ class Scene : public QObject, protected Ped::Tscene {
   // → simulated time
   double sceneTime;
   // IndividualWaypointPlanner* waypointPlanner;
+  std::vector<geometry_msgs::Point> agentPosition;
+  std::vector<geometry_msgs::Point> waypointRecord;
 };
 
 #endif

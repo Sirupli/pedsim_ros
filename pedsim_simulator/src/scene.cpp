@@ -579,8 +579,8 @@ void Scene::moveAllAgents() {
 
 // move the agent cluster to another position directly (added by junhui 3.4.2021)
 // @param int i episode number to determine the next wp 
-std::vector<geometry_msgs::Point> Scene::moveClusters(int i) {
-  std::vector<geometry_msgs::Point> agentPosition;
+std::vector<geometry_msgs::Point> Scene::moveClusters() {
+  agentPosition.clear();
   for(Agent* agent: agents){
     geometry_msgs::Point p;
     Ped::Twaypoint* w = agent->getCurrentDestination();
@@ -588,39 +588,57 @@ std::vector<geometry_msgs::Point> Scene::moveClusters(int i) {
     p.x=w->getx();
     p.y=w->gety();
     agentPosition.push_back(p);
-    ROS_INFO("moving peds++++++++++++++++=[%f][%f] epsiode [%d]", w->getx(), w->gety(), i);
+    ROS_INFO("moving peds++++++++++++++++=[%f][%f]", w->getx(), w->gety());
   }
+  agentPosition.erase(agentPosition.begin()); //the robot wp in pedsim is ignored
   return agentPosition;
 }
 
-void Scene::moveClusters(std::vector<geometry_msgs::Point> waypoints) {
+std::vector<geometry_msgs::Point> Scene::moveClusters(std::vector<geometry_msgs::Point> waypoints, int i) {
   int k = 0;   //count for agent waypoints
   int j = 1;    //count for agent
+  int size = waypoints.size();
+  waypointRecord.clear();
+  if (size==0){
+    waypointRecord=moveClusters();
+    return waypointRecord;
+  }
   for(Agent* agent: agents){
-    QList<Waypoint*> newAgentWaypoints;
-    for(int i=0; i < 2; i++){
-      QString id;
-      id.sprintf("%d_%d",j, k+i);
-      AreaWaypoint* w = new AreaWaypoint(id, waypoints[k+i].x, waypoints[k+i].y, waypoints[k+i].z);
-      w->setBehavior(static_cast<Ped::Twaypoint::Behavior>(0));
-      newAgentWaypoints.append(w);      
+    if(k==size){
+      geometry_msgs::Point p;
+      Ped::Twaypoint* w = agent->getCurrentDestination();
+      agent->setPosition(w->getx(), w->gety());
+      p.x=w->getx();
+      p.y=w->gety();
+      waypointRecord.push_back(p);
+      ROS_INFO("moving peds++++++++++++++++=[%f][%f]", w->getx(), w->gety());
+    }else{
+      QList<Waypoint*> newAgentWaypoints;
+      for(int i=0; i < 2; i++){
+        QString id;
+        id.sprintf("%d_%d",j, k+i);
+        AreaWaypoint* w = new AreaWaypoint(id, waypoints[k+i].x, waypoints[k+i].y, waypoints[k+i].z);
+        w->setBehavior(static_cast<Ped::Twaypoint::Behavior>(0));
+        newAgentWaypoints.append(w);      
+      }
+      agent->setWaypoints(newAgentWaypoints);
+      Ped::Twaypoint* destination_ped = agent->updateDestination();    
+      Waypoint* destination = dynamic_cast<Waypoint*>(destination_ped);
+      IndividualWaypointPlanner * waypointPlanner0 = new IndividualWaypointPlanner();
+      waypointPlanner0->setAgent(agent);
+      waypointPlanner0->setDestination(destination);
+      agent->setWaypointPlanner(waypointPlanner0);
+      // agent->
+      Ped::Twaypoint* w_d = agent->getCurrentDestination();
+      Waypoint *w_1=agent->getWaypoints().at(0);
+      Waypoint *w_2=agent->getWaypoints().at(1);
+      agent->setPosition(waypoints[k].x, waypoints[k].y);
+      ROS_INFO("moving peds++++++++++++++++=[%f][%f] destination[%f][%f],wp1[%f][%f], wp2[%f][%f]", waypoints[k].x, waypoints[k].y, w_d->getx(), w_d->gety(), w_1->getx(),w_1->gety(), w_2->getx(), w_2->gety());
+      k = k+2;
     }
-    agent->setWaypoints(newAgentWaypoints);
-    Ped::Twaypoint* destination_ped = agent->updateDestination();    
-    Waypoint* destination = dynamic_cast<Waypoint*>(destination_ped);
-    IndividualWaypointPlanner * waypointPlanner0 = new IndividualWaypointPlanner();
-    waypointPlanner0->setAgent(agent);
-    waypointPlanner0->setDestination(destination);
-    agent->setWaypointPlanner(waypointPlanner0);
-     // agent->
-    Ped::Twaypoint* w_d = agent->getCurrentDestination();
-    Waypoint *w_1=agent->getWaypoints().at(0);
-    Waypoint *w_2=agent->getWaypoints().at(1);
-    agent->setPosition(waypoints[k].x, waypoints[k].y);
-    ROS_INFO("moving peds++++++++++++++++=[%f][%f] destination[%f][%f],wp1[%f][%f], wp2[%f][%f]", waypoints[k].x, waypoints[k].y, w_d->getx(), w_d->gety(), w_1->getx(),w_1->gety(), w_2->getx(), w_2->gety());
-    k = k+2;
     j++;
   }
+  return waypointRecord;
 }
 
 void Scene::removeAllObstacles(){
