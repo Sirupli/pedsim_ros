@@ -164,6 +164,11 @@ Ped::Tvector Ped::Tagent::socialForce() const {
     // compute difference between both agents' velocity vectors
     // Note: the agent-other-order changed here
     Tvector velDiff = v - other->v;
+    //TODO:4 and 2 depends on the size of the zeroer
+    if(other->getType() == ZEROER){
+      velDiff=velDiff/4;
+      diff=diff/2;
+    }
 
     // compute interaction direction t_ij
     Tvector interactionVector = lambdaImportance * velDiff + diffDirection;
